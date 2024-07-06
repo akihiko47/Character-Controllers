@@ -7,6 +7,9 @@ public class CharacterAnimationsController : MonoBehaviour {
     private float turnTime = 0.2f;
 
     [SerializeField]
+    private float animationChangeTime = 0.1f;
+
+    [SerializeField]
     private CharacterMovement movementScript;
 
     private Animator animator;
@@ -18,29 +21,19 @@ public class CharacterAnimationsController : MonoBehaviour {
     }
 
     private void Update() {
-        Vector2 input = movementScript.GetPlayerInput();
+        Vector3 velocity = movementScript.GetVelocity();
 
-        RotateCharacterToInput(input);
+        animator.SetFloat("Velocity", movementScript.GetVelocityPercent(), animationChangeTime, Time.deltaTime);
 
-        if (input != Vector2.zero) {
-            animator.SetBool("isWalking", true);
-        } else {
-            animator.SetBool("isWalking", false);
-        }
-
-        if (Input.GetKey(KeyCode.LeftShift)) {
-            animator.SetBool("isRunning", true);
-        } else {
-            animator.SetBool("isRunning", false);
-        }
+        RotateCharacter(velocity);
     }
 
-    public void RotateCharacterToInput(Vector2 dir) {
-        if (dir == Vector2.zero) {
+    public void RotateCharacter(Vector3 dir) {
+        if (new Vector2(dir.x, dir.z) == Vector2.zero) {
             return;
         }
 
-        float targetRotation = Mathf.Atan2(dir.x, dir.y) * Mathf.Rad2Deg;
+        float targetRotation = Mathf.Atan2(dir.x, dir.z) * Mathf.Rad2Deg;
         transform.eulerAngles = Vector3.up * Mathf.SmoothDampAngle(transform.eulerAngles.y, targetRotation, ref rotationVelocity, turnTime);
     }
 

@@ -132,4 +132,8 @@ public class CharacterMovement : MonoBehaviour {
     public bool GetOnGround() {
         return _timeSinceLastGrounded < airJumpTime;
     }
+
+    public bool GetJumping() {
+        return _jumping;
+    }
 }

@@ -12,6 +12,9 @@ public class CharacterMovement : MonoBehaviour {
     [SerializeField, Min(0.0f)]
     private float jumpHeight = 1f;
 
+    [SerializeField, Min(0.0f)]
+    private float airJumpTime = 0.1f;
+
     [SerializeField]
     private float gravityModifier = 3f;
 
@@ -21,6 +24,7 @@ public class CharacterMovement : MonoBehaviour {
     private CharacterController _controller;
 
     private bool _running = false;
+    private bool _jumping = false;
 
     private Vector2 _input;
     private Vector3 _moveDirection;
@@ -28,6 +32,8 @@ public class CharacterMovement : MonoBehaviour {
     private float _velocityY = 0f;
 
     private float _gravity;
+
+    private float _timeSinceLastGrounded;
 
     private void Start() {
         _controller = GetComponent<CharacterController>();
@@ -37,8 +43,10 @@ public class CharacterMovement : MonoBehaviour {
 
     private void Update() {
         GetInput();
-
         Move();
+
+        ConfigureTimeSinceGrounded();
+        ConfigureJumpState();
     }
 
     private void GetInput() {
@@ -46,7 +54,7 @@ public class CharacterMovement : MonoBehaviour {
 
         _running = Input.GetKey(KeyCode.LeftShift);
 
-        if (Input.GetKey(KeyCode.Space) && _controller.isGrounded) {
+        if (Input.GetKey(KeyCode.Space) && _timeSinceLastGrounded < airJumpTime && !_jumping) {
             Jump();
         }
     }
@@ -65,20 +73,49 @@ public class CharacterMovement : MonoBehaviour {
         }
 
         float targetSpeed = (_running ? runSpeed : walkSpeed);
+
         ApplyGravity();
 
         _velocity = _moveDirection * targetSpeed + Vector3.up * _velocityY;
         
         _controller.Move(_velocity * Time.deltaTime);
+
+        if (_controller.isGrounded) {
+            _velocityY = -2f;
+        }
     }
 
     private void Jump() {
         _velocityY = Mathf.Sqrt(jumpHeight * -2f * _gravity);
+        _jumping = true;
     }
 
     private void ApplyGravity() {
         if (!_controller.isGrounded) {
             _velocityY += _gravity * Time.deltaTime;
+        }
+    }
+
+    private void ConfigureJumpState() {
+        // stop jump at ceiling
+        if ((_controller.collisionFlags & CollisionFlags.Above) != 0 && !_controller.isGrounded && _velocityY > 0f) {
+            _velocityY = 0f;
+            _jumping = false;
+        }
+
+        // stop jumping if going down
+        if (_velocityY <= 0f && _jumping) {
+            _jumping = false;
+        }
+    }
+
+    private void ConfigureTimeSinceGrounded() {
+        if (!_controller.isGrounded) {
+            _timeSinceLastGrounded += Time.deltaTime;
+        }
+
+        if (_controller.isGrounded && _timeSinceLastGrounded > 0f) {
+            _timeSinceLastGrounded = 0f;
         }
     }
 
@@ -93,6 +130,6 @@ public class CharacterMovement : MonoBehaviour {
     }
 
     public bool GetOnGround() {
-        return _controller.isGrounded;
+        return _timeSinceLastGrounded < airJumpTime;
     }
 }

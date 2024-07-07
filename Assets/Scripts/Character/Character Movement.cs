@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 [RequireComponent(typeof(CharacterController))]
@@ -20,20 +18,21 @@ public class CharacterMovement : MonoBehaviour {
     [SerializeField]
     private Transform inputSpace = default;
 
-    private CharacterController controller;
+    private CharacterController _controller;
 
-    private bool running = false;
+    private bool _running = false;
 
-    private Vector2 input;
-    private Vector3 moveDirection;
-    private Vector3 velocity;
+    private Vector2 _input;
+    private Vector3 _moveDirection;
+    private Vector3 _velocity;
+    private float _velocityY = 0f;
 
-    private float gravity;
+    private float _gravity;
 
     private void Start() {
-        controller = GetComponent<CharacterController>();
+        _controller = GetComponent<CharacterController>();
 
-        gravity = Physics.gravity.y * gravityModifier;
+        _gravity = Physics.gravity.y * gravityModifier;
     }
 
     private void Update() {
@@ -43,13 +42,17 @@ public class CharacterMovement : MonoBehaviour {
     }
 
     private void GetInput() {
-        input = new Vector2(Input.GetAxisRaw("Horizontal"), Input.GetAxisRaw("Vertical")).normalized;
+        _input = new Vector2(Input.GetAxisRaw("Horizontal"), Input.GetAxisRaw("Vertical")).normalized;
 
-        running = Input.GetKey(KeyCode.LeftShift);
+        _running = Input.GetKey(KeyCode.LeftShift);
+
+        if (Input.GetKey(KeyCode.Space) && _controller.isGrounded) {
+            Jump();
+        }
     }
 
     private void Move() {
-        moveDirection = new Vector3(input.x, 0.0f, input.y);
+        _moveDirection = new Vector3(_input.x, 0.0f, _input.y);
 
         if (inputSpace) {
             Vector3 forward = inputSpace.forward;
@@ -58,35 +61,38 @@ public class CharacterMovement : MonoBehaviour {
             Vector3 right = inputSpace.right;
             right.y = 0f;
             right.Normalize();
-            moveDirection = (forward * input.y + right * input.x).normalized;
+            _moveDirection = (forward * _input.y + right * _input.x).normalized;
         }
 
-        float targetSpeed = (running ? runSpeed : walkSpeed);
-        velocity = moveDirection * targetSpeed;
-
+        float targetSpeed = (_running ? runSpeed : walkSpeed);
         ApplyGravity();
-        controller.Move(velocity * Time.deltaTime);
+
+        _velocity = _moveDirection * targetSpeed + Vector3.up * _velocityY;
+        
+        _controller.Move(_velocity * Time.deltaTime);
     }
 
-    /*private void Jump() {
-        velocity.y = Mathf.Sqrt(jumpHeight * -2f * gravity);
-    }*/
+    private void Jump() {
+        _velocityY = Mathf.Sqrt(jumpHeight * -2f * _gravity);
+    }
 
     private void ApplyGravity() {
-        velocity.y += gravity;
-
-        if (controller.isGrounded) {
-            velocity.y = 0f;
+        if (!_controller.isGrounded) {
+            _velocityY += _gravity * Time.deltaTime;
         }
     }
 
     public Vector3 GetVelocity() {
-        return velocity;
+        return _velocity;
     }
 
     public float GetVelocityPercent() {
-        float currentSpeed = new Vector2(controller.velocity.x, controller.velocity.z).magnitude;
+        float currentSpeed = new Vector2(_controller.velocity.x, _controller.velocity.z).magnitude;
 
-        return (running ? currentSpeed / runSpeed : currentSpeed / walkSpeed * 0.5f);
+        return (_running ? currentSpeed / runSpeed : currentSpeed / walkSpeed * 0.5f);
+    }
+
+    public bool GetOnGround() {
+        return _controller.isGrounded;
     }
 }

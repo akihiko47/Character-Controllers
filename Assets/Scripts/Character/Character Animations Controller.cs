@@ -24,6 +24,7 @@ public class CharacterAnimationsController : MonoBehaviour {
         Vector3 velocity = movementScript.GetVelocity();
 
         animator.SetFloat("Velocity", movementScript.GetVelocityPercent(), animationChangeTime, Time.deltaTime);
+        animator.SetBool("inAir", !movementScript.GetOnGround());
 
         RotateCharacter(velocity);
     }

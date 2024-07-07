@@ -233,8 +233,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   walkSpeed: 1.8
   runSpeed: 4
-  jumpHeight: 5000
-  gravityModifier: 1
+  jumpHeight: 4
+  gravityModifier: 2
   inputSpace: {fileID: 963194228}
 --- !u!143 &700542988
 CharacterController:
@@ -593,7 +593,7 @@ MonoBehaviour:
   sensitivity: 5
   rotationSmoothTime: 0.06
   target: {fileID: 888563824}
-  orbitRadius: 2
+  orbitRadius: 3
   pitchMinMax: {x: -40, y: 85}
 --- !u!1 &1059560331 stripped
 GameObject:
@@ -2992,7 +2992,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   turnTime: 0.1
-  animationChangeTime: 0.1
+  animationChangeTime: 0.2
   movementScript: {fileID: 700542987}
 --- !u!1001 &1733428325
 PrefabInstance:

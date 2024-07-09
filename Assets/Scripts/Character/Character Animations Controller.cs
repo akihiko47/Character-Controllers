@@ -26,8 +26,6 @@ public class CharacterAnimationsController : MonoBehaviour {
         animator.SetFloat("Velocity", movementScript.GetVelocityPercent(), animationChangeTime, Time.deltaTime);
         animator.SetBool("inAir", !movementScript.GetOnGround());
         animator.SetBool("isJumping", movementScript.GetJumping());
-        Debug.Log(!movementScript.GetOnGround());
-        Debug.Log(movementScript.GetJumping());
         RotateCharacter(velocity);
     }
 

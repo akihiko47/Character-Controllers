@@ -12,8 +12,8 @@ public class CharacterMovement : MonoBehaviour {
     [SerializeField, Min(0.0f)]
     private float jumpHeight = 1f;
 
-    [SerializeField, Min(0.0f)]
-    private float airJumpTime = 0.1f;
+    [SerializeField, Min(0.01f)]
+    private float onGroundThreshold = 0.1f;
 
     [SerializeField]
     private float gravityModifier = 3f;
@@ -29,6 +29,7 @@ public class CharacterMovement : MonoBehaviour {
     private Vector2 _input;
     private Vector3 _moveDirection;
     private Vector3 _velocity;
+    private Vector3 _contactNormal;
     private float _velocityY = 0f;
 
     private float _gravity;
@@ -54,13 +55,15 @@ public class CharacterMovement : MonoBehaviour {
 
         _running = Input.GetKey(KeyCode.LeftShift);
 
-        if (Input.GetKey(KeyCode.Space) && _timeSinceLastGrounded < airJumpTime && !_jumping) {
+        if (Input.GetKey(KeyCode.Space) && _timeSinceLastGrounded < onGroundThreshold && !_jumping) {
             Jump();
         }
     }
 
     private void Move() {
         _moveDirection = new Vector3(_input.x, 0.0f, _input.y);
+        _moveDirection = Vector3.ProjectOnPlane(_moveDirection, _contactNormal);
+        Debug.Log(_timeSinceLastGrounded);
 
         if (inputSpace) {
             Vector3 forward = inputSpace.forward;
@@ -88,6 +91,7 @@ public class CharacterMovement : MonoBehaviour {
     private void Jump() {
         _velocityY = Mathf.Sqrt(jumpHeight * -2f * _gravity);
         _jumping = true;
+        _contactNormal = Vector3.up;
     }
 
     private void ApplyGravity() {
@@ -119,6 +123,12 @@ public class CharacterMovement : MonoBehaviour {
         }
     }
 
+    private void OnControllerColliderHit(ControllerColliderHit hit) {
+        if (_timeSinceLastGrounded < onGroundThreshold) {
+            _contactNormal = hit.normal;
+        }
+    }
+
     public Vector3 GetVelocity() {
         return _velocity;
     }
@@ -130,10 +140,20 @@ public class CharacterMovement : MonoBehaviour {
     }
 
     public bool GetOnGround() {
-        return _timeSinceLastGrounded < airJumpTime;
+        return _timeSinceLastGrounded < onGroundThreshold;
     }
 
     public bool GetJumping() {
         return _jumping;
+    }
+
+    private void OnDrawGizmos() {
+        if (_controller == null) {
+            return;
+        }
+
+        Gizmos.color = Color.blue;
+        Vector3 from = new Vector3(transform.position.x, transform.position.y, transform.position.z);
+        Gizmos.DrawRay(from, Vector3.ProjectOnPlane(_moveDirection, _contactNormal));
     }
 }

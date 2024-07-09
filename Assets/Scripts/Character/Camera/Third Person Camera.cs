@@ -48,5 +48,9 @@ public class ThirdPersonCamera : MonoBehaviour {
         transform.eulerAngles = currentRotation;
 
         transform.position = target.position - transform.forward * orbitRadius;
+
+        if (Physics.Raycast(target.position, -transform.forward, out RaycastHit hit, orbitRadius)) {
+            transform.position = target.position - transform.forward * (hit.distance - 0.1f);
+        }
     }
 }

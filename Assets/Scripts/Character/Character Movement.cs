@@ -72,7 +72,6 @@ public class CharacterMovement : MonoBehaviour {
     private void Move() {
         _moveDirection = new Vector3(_input.x, 0.0f, _input.y);
         _moveDirection = Vector3.ProjectOnPlane(_moveDirection, _contactNormal);
-        Debug.Log(_timeSinceLastGrounded);
 
         if (inputSpace) {
             Vector3 forward = inputSpace.forward;

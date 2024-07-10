@@ -3,7 +3,7 @@ using UnityEngine;
 public class ThirdPersonCamera : MonoBehaviour {
 
     [SerializeField]
-    private float sensitivity = 10f;
+    private float sensitivity = 6f;
 
     [SerializeField]
     private float rotationSmoothTime = 0.12f;

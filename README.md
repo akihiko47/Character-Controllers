@@ -2,7 +2,9 @@
 
 ![banner](https://github.com/akihiko47/Character-Controllers/blob/main/Images/running.gif)
 
-In this repository, I implemented a character controller with animations and several camera modes.
+In this repository, I implemented a character controller with animations and several camera modes. 
+This controller is based on Unity's built-in CharacterController.
+Scripts implement movement relative to the surface normal, running, gravity, jumping, input space, and different kinds of cameras.
 
 ## Installation 🔧
 There are 2 ways:
@@ -16,6 +18,7 @@ You can add camera scripts from `Assets/Scripts/Character/Camera` to your camera
 
 ## Animations 〰️
 In folder `Assets/Animations/Character` you can find different animations for some character states. Right now animations graph looks like this:
+
 ![animations](https://github.com/akihiko47/Character-Controllers/blob/main/Images/animations.jpg)
 
 ## Usage 🎮
@@ -24,6 +27,7 @@ In folder `Assets/Animations/Character` you can find different animations for so
 3) Configure character and camera settings
 
 I should note that this system works well with other humanoid character models.
+
 ![characters](https://github.com/akihiko47/Character-Controllers/blob/main/Images/characters.jpg)
 
 

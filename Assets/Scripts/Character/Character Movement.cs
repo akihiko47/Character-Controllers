@@ -6,12 +6,21 @@ public class CharacterMovement : MonoBehaviour {
     [SerializeField, Min(0.0f)]
     private float walkSpeed = 1.8f;
 
+    [Space(15)]
+    [SerializeField]
+    private bool canRun = true;
+
     [SerializeField, Min(0.0f)]
     private float runSpeed = 5f;
+
+    [Space(15)]
+    [SerializeField]
+    private bool canJump = true;
 
     [SerializeField, Min(0.0f)]
     private float jumpHeight = 1f;
 
+    [Space(15)]
     [SerializeField, Min(0.01f)]
     private float onGroundThreshold = 0.1f;
 
@@ -53,9 +62,9 @@ public class CharacterMovement : MonoBehaviour {
     private void GetInput() {
         _input = new Vector2(Input.GetAxisRaw("Horizontal"), Input.GetAxisRaw("Vertical")).normalized;
 
-        _running = Input.GetKey(KeyCode.LeftShift);
+        _running = canRun && Input.GetKey(KeyCode.LeftShift);
 
-        if (Input.GetKey(KeyCode.Space) && _timeSinceLastGrounded < onGroundThreshold && !_jumping) {
+        if (canJump && Input.GetKey(KeyCode.Space) && _timeSinceLastGrounded < onGroundThreshold && !_jumping) {
             Jump();
         }
     }
@@ -136,7 +145,12 @@ public class CharacterMovement : MonoBehaviour {
     public float GetVelocityPercent() {
         float currentSpeed = new Vector2(_controller.velocity.x, _controller.velocity.z).magnitude;
 
-        return (_running ? currentSpeed / runSpeed : currentSpeed / walkSpeed * 0.5f);
+        if (canRun) {
+            return (_running ? currentSpeed / runSpeed : currentSpeed / walkSpeed * 0.5f);
+        } else {
+            return currentSpeed / walkSpeed;
+        }
+        
     }
 
     public bool GetOnGround() {
@@ -155,5 +169,12 @@ public class CharacterMovement : MonoBehaviour {
         Gizmos.color = Color.blue;
         Vector3 from = new Vector3(transform.position.x, transform.position.y, transform.position.z);
         Gizmos.DrawRay(from, Vector3.ProjectOnPlane(_moveDirection, _contactNormal));
+
+        if (_timeSinceLastGrounded < onGroundThreshold) {
+            Gizmos.color = Color.green;
+        } else {
+            Gizmos.color = Color.red;
+        }
+        Gizmos.DrawWireSphere(transform.position, 0.1f);
     }
 }

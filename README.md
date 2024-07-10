@@ -1,5 +1,7 @@
 # 🏃 Unity Character Controller 🏃
 
+![banner](https://github.com/akihiko47/Character-Controllers/blob/main/Images/running.gif)
+
 In this repository, I implemented a character controller with animations and several camera modes.
 
 ## Installation 🔧
@@ -12,10 +14,17 @@ You can add camera scripts from `Assets/Scripts/Character/Camera` to your camera
 1) **Third-person**
 2) **First-person**
 
+## Animations 〰️
+In folder `Assets/Animations/Character` you can find different animations for some character states. Right now animations graph looks like this:
+![animations](https://github.com/akihiko47/Character-Controllers/blob/main/Images/animations.jpg)
+
 ## Usage 🎮
 1) Add character prefab from `Assets/Prefabs/Character` to your scene
 2) Add camera script to your main camera
 3) Configure character and camera settings
+
+I should note that this system works well with other humanoid character models.
+![characters](https://github.com/akihiko47/Character-Controllers/blob/main/Images/characters.jpg)
 
 
 Thank you for reading this 😊!

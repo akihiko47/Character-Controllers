@@ -4,32 +4,33 @@ using System.Collections.Generic;
 [RequireComponent(typeof(CharacterController))]
 public class CharacterMovement : MonoBehaviour {
 
+    [Header("Input")]
+    [SerializeField]
+    private Transform inputSpace = default;
+
+    [Header("Walking")]
     [SerializeField, Min(0.0f)]
     private float walkSpeed = 1.8f;
 
-    [Space(15)]
+    [Header("Running")]
     [SerializeField]
     private bool canRun = true;
 
     [SerializeField, Min(0.0f)]
     private float runSpeed = 5f;
 
-    [Space(15)]
+    [Header("Jumping")]
     [SerializeField]
     private bool canJump = true;
 
     [SerializeField, Min(0.0f)]
     private float jumpHeight = 1f;
 
-    [Space(15)]
     [SerializeField, Min(0.01f)]
     private float onGroundThreshold = 0.1f;
 
     [SerializeField]
     private float gravityModifier = 3f;
-
-    [SerializeField]
-    private Transform inputSpace = default;
 
     private CharacterController _controller;
 
@@ -54,6 +55,7 @@ public class CharacterMovement : MonoBehaviour {
 
     private void Update() {
         GetInput();
+        AdjustContactNormal();
         Move();
 
         ConfigureTimeSinceGrounded();
@@ -72,7 +74,6 @@ public class CharacterMovement : MonoBehaviour {
 
     private void Move() {
         _moveDirection = new Vector3(_input.x, 0.0f, _input.y);
-        _moveDirection = Vector3.ProjectOnPlane(_moveDirection, _contactNormal);
 
         if (inputSpace) {
             Vector3 forward = inputSpace.forward;
@@ -83,6 +84,11 @@ public class CharacterMovement : MonoBehaviour {
             right.Normalize();
             _moveDirection = (forward * _input.y + right * _input.x).normalized;
         }
+
+        Debug.Log(_moveDirection);
+        _moveDirection = Vector3.ProjectOnPlane(_moveDirection, _contactNormal).normalized;
+        Debug.Log(_moveDirection);
+        Debug.Log(" ");
 
         float targetSpeed = (_running ? runSpeed : walkSpeed);
 
@@ -132,9 +138,13 @@ public class CharacterMovement : MonoBehaviour {
         }
     }
 
-    private void OnControllerColliderHit(ControllerColliderHit hit) {
+    private void AdjustContactNormal() {
         if (_timeSinceLastGrounded < onGroundThreshold) {
-            _contactNormal = hit.normal;
+            if (Physics.Raycast(transform.position, Vector3.down, out RaycastHit hit, 0.2f)) {
+                _contactNormal = hit.normal;
+            }
+        } else {
+            _contactNormal = Vector3.up;
         }
     }
 

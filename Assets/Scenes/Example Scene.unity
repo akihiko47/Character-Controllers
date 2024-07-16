@@ -4610,6 +4610,10 @@ PrefabInstance:
       value: Character
       objectReference: {fileID: 0}
     - target: {fileID: 2721017505555130171, guid: 02e04833039bd8c438d9d686d566982d, type: 3}
+      propertyPath: canRun
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2721017505555130171, guid: 02e04833039bd8c438d9d686d566982d, type: 3}
       propertyPath: inputSpace
       value: 
       objectReference: {fileID: 963194228}
